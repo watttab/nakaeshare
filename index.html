@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ระบบปักหมุดแหล่งเรียนรู้อำเภอนาแก</title>
     
-    <!-- 1. Fonts: Sarabun สำหรับภาษาไทยที่สวยงาม -->
+    <!-- 1. Fonts: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- 2. Tailwind CSS: จัดการ Design System -->
+    <!-- 2. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 3. Config Tailwind Theme: Purple/Yellow -->
+    <!-- 3. Config Tailwind Theme -->
     <script>
         tailwind.config = {
             theme: {
@@ -33,10 +33,10 @@
         }
     </script>
 
-    <!-- 4. SweetAlert2: แจ้งเตือนสวยงาม -->
+    <!-- 4. SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- 5. Libraries สำหรับ QR และ Canvas -->
+    <!-- 5. Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
@@ -44,12 +44,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Custom Styles เพื่อการแสดงผลที่แม่นยำ */
         body {
             background-color: #f8fafc;
         }
         
-        /* พื้นที่แสดงผล (Preview Area) ต้องมี Aspect Ratio คงที่ (4:5 เหมาะกับ Facebook) */
+        /* Preview Area: Aspect Ratio 4:5 */
         #preview-card {
             aspect-ratio: 4/5;
             width: 100%;
@@ -57,28 +56,33 @@
             margin: 0 auto;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background-color: #333; /* Fallback color */
         }
 
-        /* ซ่อน Input file แบบ default */
-        input[type="file"] {
-            display: none;
+        /* QR Code Container Styling */
+        #qrcode img {
+            display: block; /* แก้บั๊กขอบขาว */
+            margin: 0 auto;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        input[type="file"] { display: none; }
+        
+        /* Utility เพื่อบังคับบรรทัดเดียว */
+        .single-line {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Header Section -->
+    <!-- Header -->
     <header class="bg-nakae-main text-white py-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 flex items-center justify-between">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-map-location-dot text-nakae-accent mr-2"></i>นาแก ปักหมุด</h1>
-            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">Beta</span>
+            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">V.2</span>
         </div>
     </header>
 
@@ -88,16 +92,13 @@
         <div class="bg-white rounded-2xl p-6 shadow-md mb-6 border-l-4 border-nakae-accent">
             <h2 class="text-lg font-bold mb-4 text-nakae-main">ข้อมูลแหล่งเรียนรู้</h2>
             
-            <!-- 1. ชื่อสถานที่ -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-600 mb-1">ชื่อแหล่งเรียนรู้</label>
-                <input type="text" id="placeNameInput" placeholder="พิมพ์ชื่อสถานที่ (ตัดจุดอัตโนมัติ)" 
-                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-nakae-main focus:border-transparent transition"
+                <input type="text" id="placeNameInput" placeholder="พิมพ์ชื่อสถานที่" 
+                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-nakae-main transition"
                        oninput="updatePreview()">
-                <p class="text-xs text-slate-400 mt-1">* ระบบจะตัดเครื่องหมายจุด (.) ออกจากส่วนหัว</p>
             </div>
 
-            <!-- 2. ปุ่ม Action: ถ่ายรูป & GPS -->
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl flex flex-col items-center justify-center transition border border-slate-200">
                     <i class="fa-solid fa-camera text-2xl mb-1 text-nakae-main"></i>
@@ -110,67 +111,67 @@
                     <span class="text-sm font-bold">ปักหมุด GPS</span>
                 </button>
             </div>
-
+            
             <div id="location-status" class="text-xs text-center text-slate-400 hidden">
                 <i class="fa-solid fa-check-circle text-green-500"></i> พิกัดพร้อมแล้ว
             </div>
         </div>
 
-        <!-- Preview Area (สิ่งที่ User เห็นและจะถูก Save) -->
+        <!-- Preview Area -->
         <div class="mb-6">
             <div class="flex justify-between items-end mb-2">
-                <h3 class="text-sm font-bold text-slate-500">ตัวอย่างภาพ (Preview)</h3>
-                <span class="text-xs text-slate-400">ขนาด 4:5 (เหมาะกับ Facebook)</span>
+                <h3 class="text-sm font-bold text-slate-500">ตัวอย่างภาพ</h3>
+                <span class="text-xs text-slate-400">ขนาด 4:5</span>
             </div>
 
             <!-- Canvas Container -->
-            <div id="preview-card" class="bg-slate-200 rounded-none relative">
+            <div id="preview-card" class="bg-slate-800 rounded-none relative text-center">
                 
                 <!-- LAYER 1: Background Image -->
                 <img id="preview-image" src="https://images.unsplash.com/photo-1528181304800-259b08848526?q=80&w=1000&auto=format&fit=crop" 
                      class="absolute inset-0 w-full h-full object-cover z-0" alt="Background">
 
-                <!-- LAYER 2: Gradient Overlay (Theme: Purple) -->
-                <!-- ไล่สีจากโปร่งใสลงไปม่วงเข้ม เพื่อให้ Footer อ่านง่าย -->
-                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#4a148c] z-10 opacity-90"></div>
+                <!-- LAYER 2: Gradient Overlay -->
+                <!-- ปรับให้มืดลงเล็กน้อยด้านล่างเพื่อให้ Text สีขาวอ่านง่าย -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#4a148c] z-10 opacity-90"></div>
 
                 <!-- LAYER 3: Content -->
                 <div class="absolute inset-0 z-20 flex flex-col justify-between p-6">
                     
-                    <!-- Header -->
-                    <div class="text-center mt-4">
-                        <div class="inline-block bg-white/20 backdrop-blur-md px-4 py-1 rounded-full border border-white/30 mb-2">
-                            <span class="text-nakae-accent font-bold text-sm tracking-wide shadow-black drop-shadow-md">
-                                <i class="fa-solid fa-star text-xs mr-1"></i> แนะนำแหล่งเรียนรู้
+                    <!-- Header: ลบกรอบออกตามสั่ง -->
+                    <div class="mt-6">
+                        <div class="mb-2">
+                            <span class="text-nakae-accent font-bold text-lg tracking-wide drop-shadow-md filter shadow-black">
+                                <i class="fa-solid fa-star text-sm mr-1"></i> แนะนำแหล่งเรียนรู้
                             </span>
                         </div>
-                        <h2 id="preview-header-text" class="text-3xl md:text-4xl font-bold text-white drop-shadow-lg leading-tight break-words">
+                        <h2 id="preview-header-text" class="text-4xl font-bold text-white drop-shadow-lg leading-tight break-words">
                             ชื่อแหล่งเรียนรู้
                         </h2>
                     </div>
 
                     <!-- Footer Area -->
-                    <div class="flex items-end justify-between mt-auto">
+                    <div class="flex items-end justify-between mt-auto w-full">
                         <!-- Left: Text Info -->
-                        <div class="text-white">
-                            <p class="text-sm font-light opacity-90 mb-0.5">ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอนาแก</p>
-                            <div class="h-1 w-12 bg-nakae-accent rounded mb-1"></div>
-                            <h3 class="text-xl font-bold text-nakae-accent tracking-wider">
+                        <div class="text-white text-left flex-1 mr-2">
+                            <!-- แก้ไขคำตามสั่ง -->
+                            <p class="text-sm font-light opacity-90 mb-1">สกร.ระดับอำเภอนาแก</p>
+                            <div class="h-1 w-10 bg-nakae-accent rounded mb-2"></div>
+                            
+                            <!-- ปรับขนาดฟอนต์ให้เล็กลงเพื่อให้พอดีบรรทัดเดียว -->
+                            <h3 class="text-lg font-bold text-nakae-accent tracking-wider single-line">
                                 นาแกเมืองแห่งการเรียนรู้
                             </h3>
                         </div>
 
                         <!-- Right: QR Code -->
-                        <div class="bg-white p-2 rounded-lg shadow-lg flex flex-col items-center">
-                            <div id="qrcode" class="w-[80px] h-[80px]"></div>
-                            <span class="text-[9px] font-bold text-slate-600 mt-1">สแกนนำทาง</span>
+                        <!-- เพิ่ม padding และพื้นหลังสีขาวชัดเจน -->
+                        <div class="bg-white p-2 rounded-lg shadow-xl flex flex-col items-center justify-center shrink-0">
+                            <!-- บังคับขนาด QR ให้แน่นอน -->
+                            <div id="qrcode" class="w-[90px] h-[90px] bg-white flex items-center justify-center overflow-hidden"></div>
+                            <span class="text-[10px] font-bold text-slate-700 mt-1 uppercase tracking-tight">สแกนนำทาง</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Watermark / Decorative Elements -->
-                <div class="absolute top-4 right-4 z-20 opacity-30">
-                    <i class="fa-solid fa-quote-right text-4xl text-white"></i>
                 </div>
             </div>
         </div>
@@ -183,37 +184,27 @@
     </main>
 
     <footer class="bg-slate-100 py-4 text-center text-xs text-slate-400 mt-4">
-        &copy; 2024 Na Kae Smart Learning. All rights reserved.
+        &copy; 2024 Na Kae Smart Learning.
     </footer>
 
     <!-- LOGIC SCRIPT -->
     <script>
-        // 1. Initial State
-        const defaultLat = 16.9444; // Default Na Kae Latitude
-        const defaultLng = 104.4208; // Default Na Kae Longitude
+        // Default Location (Na Kae District Office approx)
+        const defaultLat = 16.9444; 
+        const defaultLng = 104.4208; 
         let currentMapUrl = `https://www.google.com/maps/search/?api=1&query=${defaultLat},${defaultLng}`;
 
-        // Initialize QR Code on Load
         window.onload = function() {
             generateQRCode(currentMapUrl);
         };
 
-        // 2. Text Processing Logic (Regex)
         function updatePreview() {
             const inputVal = document.getElementById('placeNameInput').value;
-            
-            // Logic: Header ตัดจุดออก
+            // ตัดจุด (.) ออก
             const cleanHeader = inputVal.replace(/\./g, '');
-            
-            // Update UI
-            const headerDisplay = document.getElementById('preview-header-text');
-            headerDisplay.innerText = cleanHeader || "ชื่อแหล่งเรียนรู้"; // Fallback text
-
-            // Note: Footer text is static in HTML based on requirement, 
-            // but if it were dynamic, we would use: text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '')
+            document.getElementById('preview-header-text').innerText = cleanHeader || "ชื่อแหล่งเรียนรู้";
         }
 
-        // 3. Image Upload Logic
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -221,7 +212,6 @@
                 reader.onload = function(e) {
                     const img = document.getElementById('preview-image');
                     img.src = e.target.result;
-                    
                     Swal.fire({
                         icon: 'success',
                         title: 'อัพโหลดรูปสำเร็จ',
@@ -235,114 +225,94 @@
             }
         }
 
-        // 4. Geolocation Logic (ปักหมุด)
         function getLocation() {
-            // Show loading
             Swal.fire({
                 title: 'กำลังระบุพิกัด...',
-                text: 'กรุณาอนุญาตการเข้าถึงตำแหน่ง',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition, showError);
             } else {
-                Swal.fire('Error', 'Browser นี้ไม่รองรับ Geolocation', 'error');
+                Swal.fire('Error', 'Browser ไม่รองรับ Geolocation', 'error');
             }
         }
 
         function showPosition(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            
-            // Construct Google Maps URL
             currentMapUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
             
-            // Regenerate QR Code
             generateQRCode(currentMapUrl);
 
-            // Update UI Status
             document.getElementById('location-status').classList.remove('hidden');
-
             Swal.fire({
                 icon: 'success',
-                title: 'ปักหมุดสำเร็จ!',
-                text: `พิกัด: ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-                confirmButtonColor: '#6B21A8'
+                title: 'ปักหมุดแล้ว',
+                text: `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`,
+                timer: 1500,
+                showConfirmButton: false
             });
         }
 
         function showError(error) {
-            let msg = "เกิดข้อผิดพลาดในการระบุตำแหน่ง";
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    msg = "ผู้ใช้ไม่อนุญาตให้เข้าถึงตำแหน่ง";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    msg = "ข้อมูลตำแหน่งไม่สามารถใช้งานได้";
-                    break;
-                case error.TIMEOUT:
-                    msg = "หมดเวลาในการร้องขอตำแหน่ง";
-                    break;
-            }
-            Swal.fire('Error', msg, 'error');
+            Swal.fire('Error', 'ไม่สามารถระบุตำแหน่งได้', 'error');
         }
 
-        // 5. QR Code Generation Logic
         function generateQRCode(url) {
             const qrContainer = document.getElementById("qrcode");
-            qrContainer.innerHTML = ""; // Clear old QR
+            qrContainer.innerHTML = ""; 
+            
+            // ใช้ QR Code library สร้าง element
             new QRCode(qrContainer, {
                 text: url,
-                width: 80,
-                height: 80,
+                width: 90, // เพิ่มขนาด
+                height: 90,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+                correctLevel : QRCode.CorrectLevel.L // ใช้ L เพื่อให้ลายไม่ซับซ้อนเกินไป (อ่านง่ายขึ้น)
             });
         }
 
-        // 6. Save Image Logic (html2canvas)
         function downloadImage() {
             const element = document.getElementById('preview-card');
-            const placeName = document.getElementById('placeNameInput').value || "nakae-learning";
+            const placeName = document.getElementById('placeNameInput').value || "nakae-place";
 
             Swal.fire({
-                title: 'กำลังสร้างรูปภาพ...',
-                html: 'กรุณารอสักครู่',
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                title: 'กำลังบันทึกภาพ...',
+                html: 'กรุณารอสักครู่ ระบบกำลังประมวลผลความละเอียดสูง',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
             });
 
-            // Delay slightly to ensure fonts/images are rendered
+            // รอสักนิดเพื่อให้มั่นใจว่า Font/Image โหลดครบ
             setTimeout(() => {
                 html2canvas(element, {
-                    scale: 2, // เพิ่มความชัด 2 เท่า
-                    useCORS: true, // รองรับรูปข้าม domain
-                    backgroundColor: null // พื้นหลังโปร่งใส (ถ้ามี)
+                    scale: 3, // เพิ่ม Scale เป็น 3 เพื่อความคมชัดสูงสุด
+                    useCORS: true, 
+                    allowTaint: true,
+                    backgroundColor: null,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // เทคนิคเสริม: ปรับแก้ Element ใน Clone ก่อน render (ถ้าจำเป็น)
+                        // เช่น บังคับ Display ของ QR Code
+                    }
                 }).then(canvas => {
-                    // Create download link
                     const link = document.createElement('a');
                     link.download = `NaKae-${placeName}.png`;
-                    link.href = canvas.toDataURL("image/png");
+                    link.href = canvas.toDataURL("image/png", 1.0); // Quality 1.0
                     link.click();
                     
                     Swal.fire({
                         icon: 'success',
-                        title: 'บันทึกภาพเรียบร้อย',
-                        text: 'ภาพถูกบันทึกในเครื่องของคุณแล้ว',
+                        title: 'บันทึกสำเร็จ!',
                         confirmButtonColor: '#6B21A8'
                     });
                 }).catch(err => {
                     console.error(err);
-                    Swal.fire('Error', 'ไม่สามารถบันทึกภาพได้', 'error');
+                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
                 });
-            }, 500);
+            }, 800);
         }
     </script>
 </body>
