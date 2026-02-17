@@ -72,6 +72,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        /* เพิ่ม Shadow ให้ตัวหนังสืออ่านง่ายขึ้นไม่ว่าจะสีอะไร */
+        .text-glow {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Outline บางๆ ช่วยในกรณีภาพขาวจัด */
+        .text-outline-white {
+            -webkit-text-stroke: 1px rgba(0,0,0,0.1); 
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
@@ -80,7 +90,7 @@
     <header class="bg-nakae-main text-white py-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 flex items-center justify-between">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-map-location-dot text-nakae-accent mr-2"></i>นาแก ปักหมุด</h1>
-            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">V.3</span>
+            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">V.4</span>
         </div>
     </header>
 
@@ -92,9 +102,17 @@
             
             <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-600 mb-1">ชื่อแหล่งเรียนรู้</label>
-                <input type="text" id="placeNameInput" placeholder="พิมพ์ชื่อสถานที่" 
-                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-nakae-main transition"
-                       oninput="updatePreview()">
+                <div class="flex gap-2">
+                    <input type="text" id="placeNameInput" placeholder="พิมพ์ชื่อสถานที่" 
+                           class="flex-grow px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-nakae-main transition"
+                           oninput="updatePreview()">
+                    
+                    <!-- ปุ่มเปลี่ยนสีตัวอักษร -->
+                    <button onclick="toggleTextColor()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-3 py-2 rounded-lg transition tooltip" title="เปลี่ยนสีตัวอักษร">
+                        <i class="fa-solid fa-palette text-nakae-main"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">* กดปุ่มจานสี หากพื้นหลังขาวเกินไป</p>
             </div>
 
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -130,19 +148,22 @@
                      class="absolute inset-0 w-full h-full object-cover z-0" alt="Background">
 
                 <!-- LAYER 2: Gradient Overlay -->
-                <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#4a148c] z-10 opacity-90"></div>
+                <!-- ปรับ Gradient ด้านบนให้เข้มขึ้นเล็กน้อย (from-black/40) เพื่อช่วยตัวหนังสือ -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#4a148c] z-10 opacity-90"></div>
 
                 <!-- LAYER 3: Content -->
                 <div class="absolute inset-0 z-20 flex flex-col justify-between p-6">
                     
-                    <!-- Header: ขยับขึ้น (mt-2 แทน mt-6) และเปลี่ยนไอคอนเป็นหมุด -->
+                    <!-- Header -->
                     <div class="mt-2">
                         <div class="mb-2">
-                            <span class="text-nakae-accent font-bold text-lg tracking-wide drop-shadow-md filter shadow-black">
+                            <!-- เพิ่ม class text-glow ให้ชัดขึ้น -->
+                            <span id="header-badge" class="text-nakae-accent font-bold text-lg tracking-wide drop-shadow-md filter shadow-black text-glow">
                                 <i class="fa-solid fa-map-pin text-sm mr-1"></i> แนะนำแหล่งเรียนรู้
                             </span>
                         </div>
-                        <h2 id="preview-header-text" class="text-4xl font-bold text-white drop-shadow-lg leading-tight break-words">
+                        <!-- เพิ่ม id เพื่อควบคุมสี และ class text-glow -->
+                        <h2 id="preview-header-text" class="text-4xl font-bold text-white leading-tight break-words text-glow text-outline-white transition-colors duration-300">
                             ชื่อแหล่งเรียนรู้
                         </h2>
                     </div>
@@ -151,14 +172,11 @@
                     <div class="flex items-end justify-between mt-auto w-full mb-1"> 
                         <!-- Left: Text Info -->
                         <div class="text-white text-left flex-1 mr-2">
+                            <p class="text-sm font-light opacity-90 mb-2 text-glow">สกร.ระดับอำเภอนาแก</p>
                             
-                            <!-- ปรับระยะห่าง: เพิ่ม mb-2 ให้ห่างจากขีดเหลือง -->
-                            <p class="text-sm font-light opacity-90 mb-2">สกร.ระดับอำเภอนาแก</p>
+                            <div class="h-1 w-10 bg-nakae-accent rounded mb-3 shadow-sm"></div>
                             
-                            <div class="h-1 w-10 bg-nakae-accent rounded mb-3"></div>
-                            
-                            <!-- ปรับระยะ: เพิ่ม pb-1 เพื่อไม่ให้สระอุ/อู โดนตัดที่ขอบล่าง -->
-                            <h3 class="text-lg font-bold text-nakae-accent tracking-wider single-line pb-1">
+                            <h3 class="text-lg font-bold text-nakae-accent tracking-wider single-line pb-1 text-glow">
                                 นาแกเมืองแห่งการเรียนรู้
                             </h3>
                         </div>
@@ -173,14 +191,12 @@
             </div>
         </div>
 
-        <!-- Action Buttons: Share & Save -->
+        <!-- Action Buttons -->
         <div class="grid grid-cols-5 gap-3">
-            <!-- Share Button (40% width approx) -->
             <button onclick="shareImage()" class="col-span-2 bg-nakae-accent hover:bg-yellow-400 text-nakae-main font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-share-nodes mr-2"></i> แชร์
             </button>
 
-            <!-- Save Button (60% width approx) -->
             <button onclick="downloadImage()" class="col-span-3 bg-nakae-main hover:bg-purple-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-download mr-2"></i> บันทึกภาพ
             </button>
@@ -198,9 +214,56 @@
         const defaultLng = 104.4208; 
         let currentMapUrl = `https://www.google.com/maps/search/?api=1&query=${defaultLat},${defaultLng}`;
 
+        // State สำหรับสีตัวหนังสือ
+        let isPurpleText = false;
+
         window.onload = function() {
             generateQRCode(currentMapUrl);
         };
+
+        // Logic สลับสีตัวหนังสือ
+        function toggleTextColor() {
+            isPurpleText = !isPurpleText;
+            const headerText = document.getElementById('preview-header-text');
+            const headerBadge = document.getElementById('header-badge');
+            
+            if (isPurpleText) {
+                // เปลี่ยนเป็นสีม่วง (ธีม)
+                headerText.classList.remove('text-white');
+                headerText.classList.add('text-nakae-accent'); // ใช้สีเหลืองหรือม่วงดีกว่า? ลองเหลืองก่อนให้เด่นบนพื้นมืด แต่ถ้าพื้นขาวต้องม่วง
+                // แก้ไข: ใช้สีม่วงเข้ม (nakae-main) จะชัดกว่าบนพื้นขาว แต่ถ้าพื้นหลังสีม่วงจะจม
+                // โจทย์คือ "ภาพขาว" -> ดังนั้นใช้สีม่วงเข้ม (Main)
+                headerText.classList.remove('text-nakae-accent'); 
+                headerText.classList.add('text-[#6B21A8]'); // Force Purple code
+                
+                // ใส่ขอบขาวรอบตัวหนังสือม่วงเพื่อให้เด้ง
+                headerText.style.webkitTextStroke = "1px white"; 
+
+                // แจ้งเตือนเล็กๆ
+                Swal.fire({
+                    icon: 'info',
+                    title: 'เปลี่ยนเป็นสีเข้ม',
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            } else {
+                // กลับเป็นสีขาว
+                headerText.classList.remove('text-[#6B21A8]');
+                headerText.classList.add('text-white');
+                headerText.style.webkitTextStroke = "1px rgba(0,0,0,0.1)"; 
+                
+                Swal.fire({
+                    icon: 'info',
+                    title: 'เปลี่ยนเป็นสีขาว',
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        }
 
         function updatePreview() {
             const inputVal = document.getElementById('placeNameInput').value;
@@ -306,7 +369,6 @@
         }
 
         async function shareImage() {
-            // Check if Web Share API is supported
             if (!navigator.share) {
                 Swal.fire('ไม่รองรับ', 'Browser นี้ไม่รองรับการแชร์รูปภาพโดยตรง กรุณาใช้ปุ่มบันทึกภาพแทน', 'info');
                 return;
@@ -327,13 +389,13 @@
                                 title: 'แนะนำแหล่งเรียนรู้ นาแก',
                                 text: `แหล่งเรียนรู้: ${placeName} #นาแกเมืองแห่งการเรียนรู้`
                             });
-                            Swal.close(); // Close loading if share dialog opens
+                            Swal.close(); 
                         } catch (shareError) {
                             if (shareError.name !== 'AbortError') {
                                 console.error(shareError);
                                 Swal.fire('Error', 'การแชร์ล้มเหลว', 'error');
                             } else {
-                                Swal.close(); // User cancelled
+                                Swal.close(); 
                             }
                         }
                     }, 'image/png');
