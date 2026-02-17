@@ -57,18 +57,16 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            background-color: #333; /* Fallback color */
+            background-color: #333; 
         }
 
-        /* QR Code Container Styling */
         #qrcode img {
-            display: block; /* แก้บั๊กขอบขาว */
+            display: block;
             margin: 0 auto;
         }
 
         input[type="file"] { display: none; }
         
-        /* Utility เพื่อบังคับบรรทัดเดียว */
         .single-line {
             white-space: nowrap;
             overflow: hidden;
@@ -82,7 +80,7 @@
     <header class="bg-nakae-main text-white py-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 flex items-center justify-between">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-map-location-dot text-nakae-accent mr-2"></i>นาแก ปักหมุด</h1>
-            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">V.2</span>
+            <span class="text-xs bg-nakae-accent text-nakae-main px-2 py-1 rounded-full font-bold">V.3</span>
         </div>
     </header>
 
@@ -132,17 +130,16 @@
                      class="absolute inset-0 w-full h-full object-cover z-0" alt="Background">
 
                 <!-- LAYER 2: Gradient Overlay -->
-                <!-- ปรับให้มืดลงเล็กน้อยด้านล่างเพื่อให้ Text สีขาวอ่านง่าย -->
                 <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#4a148c] z-10 opacity-90"></div>
 
                 <!-- LAYER 3: Content -->
                 <div class="absolute inset-0 z-20 flex flex-col justify-between p-6">
                     
-                    <!-- Header: ลบกรอบออกตามสั่ง -->
-                    <div class="mt-6">
+                    <!-- Header: ขยับขึ้น (mt-2 แทน mt-6) และเปลี่ยนไอคอนเป็นหมุด -->
+                    <div class="mt-2">
                         <div class="mb-2">
                             <span class="text-nakae-accent font-bold text-lg tracking-wide drop-shadow-md filter shadow-black">
-                                <i class="fa-solid fa-star text-sm mr-1"></i> แนะนำแหล่งเรียนรู้
+                                <i class="fa-solid fa-map-pin text-sm mr-1"></i> แนะนำแหล่งเรียนรู้
                             </span>
                         </div>
                         <h2 id="preview-header-text" class="text-4xl font-bold text-white drop-shadow-lg leading-tight break-words">
@@ -151,23 +148,23 @@
                     </div>
 
                     <!-- Footer Area -->
-                    <div class="flex items-end justify-between mt-auto w-full">
+                    <div class="flex items-end justify-between mt-auto w-full mb-1"> 
                         <!-- Left: Text Info -->
                         <div class="text-white text-left flex-1 mr-2">
-                            <!-- แก้ไขคำตามสั่ง -->
-                            <p class="text-sm font-light opacity-90 mb-1">สกร.ระดับอำเภอนาแก</p>
-                            <div class="h-1 w-10 bg-nakae-accent rounded mb-2"></div>
                             
-                            <!-- ปรับขนาดฟอนต์ให้เล็กลงเพื่อให้พอดีบรรทัดเดียว -->
-                            <h3 class="text-lg font-bold text-nakae-accent tracking-wider single-line">
+                            <!-- ปรับระยะห่าง: เพิ่ม mb-2 ให้ห่างจากขีดเหลือง -->
+                            <p class="text-sm font-light opacity-90 mb-2">สกร.ระดับอำเภอนาแก</p>
+                            
+                            <div class="h-1 w-10 bg-nakae-accent rounded mb-3"></div>
+                            
+                            <!-- ปรับระยะ: เพิ่ม pb-1 เพื่อไม่ให้สระอุ/อู โดนตัดที่ขอบล่าง -->
+                            <h3 class="text-lg font-bold text-nakae-accent tracking-wider single-line pb-1">
                                 นาแกเมืองแห่งการเรียนรู้
                             </h3>
                         </div>
 
                         <!-- Right: QR Code -->
-                        <!-- เพิ่ม padding และพื้นหลังสีขาวชัดเจน -->
-                        <div class="bg-white p-2 rounded-lg shadow-xl flex flex-col items-center justify-center shrink-0">
-                            <!-- บังคับขนาด QR ให้แน่นอน -->
+                        <div class="bg-white p-2 rounded-lg shadow-xl flex flex-col items-center justify-center shrink-0 mb-1">
                             <div id="qrcode" class="w-[90px] h-[90px] bg-white flex items-center justify-center overflow-hidden"></div>
                             <span class="text-[10px] font-bold text-slate-700 mt-1 uppercase tracking-tight">สแกนนำทาง</span>
                         </div>
@@ -176,10 +173,18 @@
             </div>
         </div>
 
-        <!-- Save Button -->
-        <button onclick="downloadImage()" class="w-full bg-nakae-main hover:bg-purple-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-download mr-2"></i> บันทึกภาพ
-        </button>
+        <!-- Action Buttons: Share & Save -->
+        <div class="grid grid-cols-5 gap-3">
+            <!-- Share Button (40% width approx) -->
+            <button onclick="shareImage()" class="col-span-2 bg-nakae-accent hover:bg-yellow-400 text-nakae-main font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-share-nodes mr-2"></i> แชร์
+            </button>
+
+            <!-- Save Button (60% width approx) -->
+            <button onclick="downloadImage()" class="col-span-3 bg-nakae-main hover:bg-purple-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-download mr-2"></i> บันทึกภาพ
+            </button>
+        </div>
 
     </main>
 
@@ -189,7 +194,6 @@
 
     <!-- LOGIC SCRIPT -->
     <script>
-        // Default Location (Na Kae District Office approx)
         const defaultLat = 16.9444; 
         const defaultLng = 104.4208; 
         let currentMapUrl = `https://www.google.com/maps/search/?api=1&query=${defaultLat},${defaultLng}`;
@@ -200,7 +204,6 @@
 
         function updatePreview() {
             const inputVal = document.getElementById('placeNameInput').value;
-            // ตัดจุด (.) ออก
             const cleanHeader = inputVal.replace(/\./g, '');
             document.getElementById('preview-header-text').innerText = cleanHeader || "ชื่อแหล่งเรียนรู้";
         }
@@ -214,7 +217,7 @@
                     img.src = e.target.result;
                     Swal.fire({
                         icon: 'success',
-                        title: 'อัพโหลดรูปสำเร็จ',
+                        title: 'อัพโหลดสำเร็จ',
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
@@ -242,7 +245,6 @@
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             currentMapUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-            
             generateQRCode(currentMapUrl);
 
             document.getElementById('location-status').classList.remove('hidden');
@@ -262,57 +264,84 @@
         function generateQRCode(url) {
             const qrContainer = document.getElementById("qrcode");
             qrContainer.innerHTML = ""; 
-            
-            // ใช้ QR Code library สร้าง element
             new QRCode(qrContainer, {
                 text: url,
-                width: 90, // เพิ่มขนาด
+                width: 90, 
                 height: 90,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.L // ใช้ L เพื่อให้ลายไม่ซับซ้อนเกินไป (อ่านง่ายขึ้น)
+                correctLevel : QRCode.CorrectLevel.L 
             });
         }
 
-        function downloadImage() {
+        // Shared Logic for Capture
+        async function captureCanvas() {
             const element = document.getElementById('preview-card');
-            const placeName = document.getElementById('placeNameInput').value || "nakae-place";
-
-            Swal.fire({
-                title: 'กำลังบันทึกภาพ...',
-                html: 'กรุณารอสักครู่ ระบบกำลังประมวลผลความละเอียดสูง',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
+            return await html2canvas(element, {
+                scale: 3,
+                useCORS: true, 
+                allowTaint: true,
+                backgroundColor: null,
+                logging: false
             });
+        }
 
-            // รอสักนิดเพื่อให้มั่นใจว่า Font/Image โหลดครบ
-            setTimeout(() => {
-                html2canvas(element, {
-                    scale: 3, // เพิ่ม Scale เป็น 3 เพื่อความคมชัดสูงสุด
-                    useCORS: true, 
-                    allowTaint: true,
-                    backgroundColor: null,
-                    logging: false,
-                    onclone: (clonedDoc) => {
-                        // เทคนิคเสริม: ปรับแก้ Element ใน Clone ก่อน render (ถ้าจำเป็น)
-                        // เช่น บังคับ Display ของ QR Code
-                    }
-                }).then(canvas => {
+        async function downloadImage() {
+            const placeName = document.getElementById('placeNameInput').value || "nakae-place";
+            
+            Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+
+            setTimeout(async () => {
+                try {
+                    const canvas = await captureCanvas();
                     const link = document.createElement('a');
                     link.download = `NaKae-${placeName}.png`;
-                    link.href = canvas.toDataURL("image/png", 1.0); // Quality 1.0
+                    link.href = canvas.toDataURL("image/png", 1.0);
                     link.click();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'บันทึกสำเร็จ!',
-                        confirmButtonColor: '#6B21A8'
-                    });
-                }).catch(err => {
+                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', confirmButtonColor: '#6B21A8' });
+                } catch (err) {
+                    Swal.fire('Error', 'เกิดข้อผิดพลาด', 'error');
+                }
+            }, 500);
+        }
+
+        async function shareImage() {
+            // Check if Web Share API is supported
+            if (!navigator.share) {
+                Swal.fire('ไม่รองรับ', 'Browser นี้ไม่รองรับการแชร์รูปภาพโดยตรง กรุณาใช้ปุ่มบันทึกภาพแทน', 'info');
+                return;
+            }
+
+            const placeName = document.getElementById('placeNameInput').value || "nakae-place";
+            Swal.fire({ title: 'กำลังเตรียมแชร์...', didOpen: () => Swal.showLoading() });
+
+            setTimeout(async () => {
+                try {
+                    const canvas = await captureCanvas();
+                    canvas.toBlob(async (blob) => {
+                        const file = new File([blob], `NaKae-${placeName}.png`, { type: 'image/png' });
+                        
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'แนะนำแหล่งเรียนรู้ นาแก',
+                                text: `แหล่งเรียนรู้: ${placeName} #นาแกเมืองแห่งการเรียนรู้`
+                            });
+                            Swal.close(); // Close loading if share dialog opens
+                        } catch (shareError) {
+                            if (shareError.name !== 'AbortError') {
+                                console.error(shareError);
+                                Swal.fire('Error', 'การแชร์ล้มเหลว', 'error');
+                            } else {
+                                Swal.close(); // User cancelled
+                            }
+                        }
+                    }, 'image/png');
+                } catch (err) {
                     console.error(err);
-                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-                });
-            }, 800);
+                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการสร้างภาพ', 'error');
+                }
+            }, 500);
         }
     </script>
 </body>
